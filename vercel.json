@@ -1,0 +1,8 @@
+{
+  "buildCommand": "pnpm --filter @workspace/vcf-card run build",
+  "outputDirectory": "dist",
+  "installCommand": "pnpm install",
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}

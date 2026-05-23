@@ -106,15 +106,9 @@ export default function PublicCard() {
             </span>
           </div>
           <div className="progress-track"><div className="progress-fill" style={{ width: `${pct}%` }} /></div>
-          {card.targetReached
-            ? (
-              <a href={`/api/u/${username}/download`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 14, padding: "11px", background: "linear-gradient(135deg,rgba(0,160,0,.9),rgba(0,255,0,.85))", borderRadius: 9, color: "#000", fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 12, letterSpacing: ".06em", textDecoration: "none" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                DOWNLOAD VCF
-              </a>
-            )
-            : <div style={{ fontSize: 10, color: "var(--gray-600)", textAlign: "center", marginTop: 8 }}>🔒 VCF unlocks at {card.target} contacts</div>
-          }
+          <div style={{ fontSize: 10, color: "var(--gray-600)", textAlign: "center", marginTop: 8 }}>
+            {card.targetReached ? "🎉 Target reached — submit your contact to download" : `🔒 VCF unlocks at ${card.target} contacts`}
+          </div>
         </div>
 
         {/* Contact form */}
@@ -123,13 +117,28 @@ export default function PublicCard() {
           <div className="wolf-label" style={{ marginBottom: 14 }}>Submit Your Contact</div>
 
           {done ? (
-            <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <div style={{ textAlign: "center", padding: "16px 0" }}>
               <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(0,255,0,0.08)", border: "1px solid var(--primary-border)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff00" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
               <div style={{ fontFamily: "'Orbitron',monospace", fontSize: 13, color: "var(--primary)", marginBottom: 5 }}>Contact Saved</div>
               <div style={{ fontSize: 11, color: "var(--gray-500)", lineHeight: 1.5 }}>Thanks for joining @{card.username}'s network.</div>
-              <button className="btn-ghost" style={{ marginTop: 16, fontSize: 10 }}
+
+              {/* VCF download — only visible after submitting contact */}
+              {card.targetReached ? (
+                <a href={`/api/u/${username}/download`}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 18, padding: "12px", background: "linear-gradient(135deg,rgba(0,160,0,.9),rgba(0,255,0,.85))", borderRadius: 9, color: "#000", fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 12, letterSpacing: ".06em", textDecoration: "none" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  DOWNLOAD VCF
+                </a>
+              ) : (
+                <div style={{ marginTop: 16, padding: "10px 14px", borderRadius: 8, background: "rgba(0,255,0,0.04)", border: "1px solid rgba(0,255,0,0.12)", fontSize: 11, color: "var(--gray-500)", lineHeight: 1.6 }}>
+                  ⏳ You're on the list!<br />
+                  <span style={{ color: "var(--gray-600)" }}>VCF will be ready once {card.target} contacts are collected.</span>
+                </div>
+              )}
+
+              <button className="btn-ghost" style={{ marginTop: 14, fontSize: 10 }}
                 onClick={() => { setDone(false); setForm({ fullName: "", phone: "" }); }}>
                 Submit another →
               </button>

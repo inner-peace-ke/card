@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "wolfXnode Digital Card"
+version = "1.0.0"
+id = "artifacts/vcf-card"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25326
+
+[services.development]
+run = "pnpm --filter @workspace/vcf-card run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/vcf-card", "run", "build" ]
+publicDir = "artifacts/vcf-card/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25326"
+BASE_PATH = "/"

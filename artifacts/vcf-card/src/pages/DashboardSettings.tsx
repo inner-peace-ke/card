@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
 import { api } from "@/lib/api";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 const BORDER = "var(--primary-border)";
 const G = "var(--primary)";
@@ -16,7 +17,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 const inp: React.CSSProperties = {
-  width: "100%", padding: "10px 13px",
+  width: "100%", padding: "10px 13px", boxSizing: "border-box",
   background: "rgba(0,0,0,0.7)", border: `1px solid ${BORDER}`,
   borderRadius: 8, color: "#fff", fontFamily: "'JetBrains Mono',monospace",
   fontSize: ".78rem", outline: "none",
@@ -34,6 +35,7 @@ function Msg({ text }: { text: string }) {
 
 export default function DashboardSettings({ defaultTab = "card" }: { defaultTab?: "card" | "password" }) {
   const [, nav] = useLocation();
+  const isMobile = useIsMobile();
   const [stats, setStats] = useState<any>(null);
   const [settings, setSettings] = useState<any>({});
   const [loading, setLoading] = useState(true);
@@ -84,41 +86,41 @@ export default function DashboardSettings({ defaultTab = "card" }: { defaultTab?
   return (
     <DashboardLayout planName={stats?.planName}>
 
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: "1.5rem", color: G, marginBottom: 4 }}>Settings</h1>
-        <p style={{ fontSize: ".75rem", color: "var(--gray-500)", fontFamily: "'JetBrains Mono',monospace" }}>Manage your card appearance and account security</p>
+      <div style={{ marginBottom: 22 }}>
+        <h1 style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: isMobile ? "1.2rem" : "1.5rem", color: G, marginBottom: 4 }}>Settings</h1>
+        <p style={{ fontSize: ".72rem", color: "var(--gray-500)", fontFamily: "'JetBrains Mono',monospace" }}>Manage your card appearance and account security</p>
       </div>
 
       {/* Tabs */}
       <div style={{ display: "flex", gap: 0, marginBottom: 22, borderBottom: `1px solid ${BORDER}` }}>
         {(["card", "password"] as const).map(t => (
-          <button key={t} onClick={() => setActiveTab(t)} style={{ padding: "10px 20px", background: "transparent", border: "none", borderBottom: activeTab === t ? `2px solid ${G}` : "2px solid transparent", color: activeTab === t ? G : "var(--gray-500)", fontFamily: "'JetBrains Mono',monospace", fontSize: ".75rem", letterSpacing: ".06em", cursor: "pointer", marginBottom: -1, textTransform: "capitalize" }}>
-            {t === "card" ? "Card Settings" : "Change Password"}
+          <button key={t} onClick={() => setActiveTab(t)} style={{ padding: isMobile ? "9px 14px" : "10px 20px", background: "transparent", border: "none", borderBottom: activeTab === t ? `2px solid ${G}` : "2px solid transparent", color: activeTab === t ? G : "var(--gray-500)", fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? ".68rem" : ".75rem", letterSpacing: ".04em", cursor: "pointer", marginBottom: -1, textTransform: "capitalize" }}>
+            {t === "card" ? "Card Settings" : "Password"}
           </button>
         ))}
       </div>
 
       {activeTab === "card" && (
         <div style={{ maxWidth: 620 }}>
-          <form onSubmit={saveSettings} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+          <form onSubmit={saveSettings} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
             {/* Preview strip */}
-            <div style={{ background: "rgba(0,255,0,0.03)", border: `1px solid ${BORDER}`, borderRadius: 11, padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-              <div>
-                <div style={{ fontSize: ".65rem", color: "var(--gray-600)", marginBottom: 2 }}>Your public card URL</div>
-                <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: ".78rem", color: G }}>
+            <div style={{ background: "rgba(0,255,0,0.03)", border: `1px solid ${BORDER}`, borderRadius: 11, padding: "12px 14px", display: "flex", alignItems: isMobile ? "flex-start" : "center", gap: 10, flexDirection: isMobile ? "column" : "row" }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: ".6rem", color: "var(--gray-600)", marginBottom: 2 }}>Your public card URL</div>
+                <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: ".72rem", color: G, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {location.origin}/u/{(() => {
                     try { return JSON.parse(localStorage.getItem("wolf_user") ?? "null")?.username ?? "…"; } catch { return "…"; }
                   })()}
                 </div>
               </div>
-              <button type="button" className="btn-ghost" style={{ marginLeft: "auto", fontSize: ".68rem", padding: "6px 12px" }}
+              <button type="button" className="btn-ghost" style={{ fontSize: ".65rem", padding: "6px 12px", flexShrink: 0, alignSelf: isMobile ? "flex-start" : "center" }}
                 onClick={() => window.open(`/u/${(() => { try { return JSON.parse(localStorage.getItem("wolf_user") ?? "null")?.username; } catch { return ""; } })()}`, "_blank")}>
                 Preview ↗
               </button>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
               <Field label="Display Name">
                 <input style={inp} placeholder="Wolf Tech" value={settings.cardName ?? ""}
                   onChange={e => setSettings((s: any) => ({ ...s, cardName: e.target.value }))} />
@@ -135,7 +137,7 @@ export default function DashboardSettings({ defaultTab = "card" }: { defaultTab?
                 onChange={e => setSettings((s: any) => ({ ...s, bio: e.target.value }))} />
             </Field>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
               <Field label="WhatsApp URL">
                 <input style={inp} placeholder="https://wa.me/..." value={settings.whatsapp ?? ""}
                   onChange={e => setSettings((s: any) => ({ ...s, whatsapp: e.target.value }))} />
@@ -154,8 +156,8 @@ export default function DashboardSettings({ defaultTab = "card" }: { defaultTab?
               </Field>
             </div>
 
-            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              <button className="btn-solid" type="submit">
+            <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 10, alignItems: isMobile ? "stretch" : "center" }}>
+              <button className="btn-solid" type="submit" style={{ width: isMobile ? "100%" : "auto" }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                 Save Card Settings
               </button>
@@ -166,7 +168,7 @@ export default function DashboardSettings({ defaultTab = "card" }: { defaultTab?
       )}
 
       {activeTab === "password" && (
-        <div style={{ maxWidth: 400 }}>
+        <div style={{ maxWidth: isMobile ? "100%" : 400 }}>
           <form onSubmit={changePassword} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <Field label="Current Password">
               <input style={inp} type="password" placeholder="••••••••" autoComplete="current-password"
@@ -180,8 +182,8 @@ export default function DashboardSettings({ defaultTab = "card" }: { defaultTab?
               <input style={inp} type="password" placeholder="Repeat" autoComplete="new-password"
                 value={pw.confirm} onChange={e => setPw(p => ({ ...p, confirm: e.target.value }))} required />
             </Field>
-            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              <button className="btn-solid" type="submit">Update Password</button>
+            <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 10, alignItems: isMobile ? "stretch" : "center" }}>
+              <button className="btn-solid" type="submit" style={{ width: isMobile ? "100%" : "auto" }}>Update Password</button>
               {pwMsg && <Msg text={pwMsg} />}
             </div>
           </form>

@@ -5,6 +5,16 @@ import "react-phone-number-input/style.css";
 import NeonBg from "@/components/NeonBg";
 import WolfNav from "@/components/WolfNav";
 
+function setMetaTag(attr: "property" | "name", key: string, value: string) {
+  let el = document.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute(attr, key);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("content", value);
+}
+
 interface CardData {
   username: string; cardName: string; bio: string;
   whatsapp: string; youtube: string; waChannel: string; waGroup: string;
@@ -33,6 +43,35 @@ export default function PublicCard() {
       .then(d => { if (d.error) setNotFound(true); else setCard(d); })
       .catch(() => setNotFound(true));
   }, [username]);
+
+  useEffect(() => {
+    if (!card) return;
+    const title = `${card.cardName} (@${card.username}) — WolfVCF`;
+    const desc = card.bio
+      ? `${card.bio} | Join @${card.username}'s network on WolfVCF.`
+      : `Join @${card.username}'s network. Submit your contact to get the VCF file.`;
+    const img = `${window.location.origin}/api/u/${username}/og-image`;
+
+    document.title = title;
+    setMetaTag("property", "og:title", title);
+    setMetaTag("property", "og:description", desc);
+    setMetaTag("property", "og:image", img);
+    setMetaTag("property", "og:image:width", "1200");
+    setMetaTag("property", "og:image:height", "630");
+    setMetaTag("property", "og:type", "profile");
+    setMetaTag("name", "twitter:card", "summary_large_image");
+    setMetaTag("name", "twitter:title", title);
+    setMetaTag("name", "twitter:description", desc);
+    setMetaTag("name", "twitter:image", img);
+    setMetaTag("name", "description", desc);
+
+    return () => {
+      document.title = "WolfVCF — Collect Your Contacts";
+      setMetaTag("property", "og:title", "WolfVCF — Collect Your Contacts");
+      setMetaTag("property", "og:description", "Create a digital contact card in seconds. Share your link, collect contacts crowd-style, and download a VCF file when your target is reached.");
+      setMetaTag("property", "og:image", "/og-image.svg");
+    };
+  }, [card, username]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setMsg(null);

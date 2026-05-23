@@ -94,6 +94,14 @@ a { text-decoration: none; color: inherit; }
 .wolf-logo-text .dim   { color: var(--gray-300); }
 .wolf-logo-sub { font-size: .6rem; color: var(--gray-500); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
 
+/* ── Nav mobile fix ── */
+@media (max-width: 520px) {
+  .wolf-logo-sub  { display: none; }
+  .wolf-logo-icon { width: 34px; height: 34px; border-radius: 8px; }
+  .wolf-logo      { gap: 8px; }
+  .wolf-nav-inner { padding: 0 .875rem; }
+}
+
 /* ── Cards ── */
 .wolf-card {
   border-radius: 16px;

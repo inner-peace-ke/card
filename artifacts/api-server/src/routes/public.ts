@@ -46,6 +46,55 @@ router.get("/:username", async (req, res) => {
   });
 });
 
+/* GET /api/u/:username/og-image — dynamic OG image for social share */
+router.get("/:username/og-image", async (req, res) => {
+  const user = await getUserByUsername(req.params.username);
+  const settings = user ? await getSettings(user.id) : null;
+  const cardName = settings?.cardName ?? req.params.username;
+  const username = req.params.username;
+  const bio = settings?.bio ?? "WolfVCF Digital Card";
+
+  const initials = cardName.split(" ").map((w: string) => w[0] ?? "").join("").toUpperCase().slice(0, 2) || username.slice(0, 2).toUpperCase();
+
+  const svg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#001200"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="av" x1="0" y1="0" x2="0" y2="160" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#003300"/>
+      <stop offset="100%" stop-color="#001100"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="24" y="24" width="1152" height="582" rx="20" fill="none" stroke="#00ff00" stroke-opacity="0.15" stroke-width="1.5"/>
+  <line x1="24" y1="540" x2="1176" y2="540" stroke="#00ff00" stroke-opacity="0.1" stroke-width="1"/>
+
+  <!-- Avatar circle -->
+  <circle cx="160" cy="260" r="100" fill="url(#av)" stroke="#00ff00" stroke-opacity="0.4" stroke-width="2"/>
+  <text x="160" y="278" font-family="Arial, sans-serif" font-weight="900" font-size="72" fill="#00ff00" text-anchor="middle">${initials}</text>
+
+  <!-- Card name -->
+  <text x="308" y="220" font-family="Arial Black, sans-serif" font-weight="900" font-size="72" fill="#ffffff" letter-spacing="-1">${cardName.slice(0, 20)}</text>
+  <!-- Username -->
+  <text x="312" y="278" font-family="monospace" font-size="30" fill="#00ff00" fill-opacity="0.7" letter-spacing="1">@${username}</text>
+  <!-- Bio -->
+  <text x="312" y="328" font-family="monospace" font-size="26" fill="#ffffff" fill-opacity="0.4">${bio.slice(0, 55)}</text>
+
+  <!-- CTA -->
+  <rect x="308" y="370" width="380" height="58" rx="10" fill="#00ff00" fill-opacity="0.08" stroke="#00ff00" stroke-opacity="0.3" stroke-width="1.5"/>
+  <text x="498" y="406" font-family="monospace" font-size="22" fill="#00ff00" fill-opacity="0.85" text-anchor="middle" letter-spacing="2">JOIN MY NETWORK</text>
+
+  <!-- WolfVCF brand -->
+  <text x="600" y="585" font-family="monospace" font-size="18" fill="#00ff00" fill-opacity="0.25" text-anchor="middle" letter-spacing="4">WOLFVCF — DIGITAL CONTACT CARD</text>
+</svg>`;
+
+  res.setHeader("Content-Type", "image/svg+xml");
+  res.setHeader("Cache-Control", "public, max-age=300");
+  res.send(svg);
+});
+
 /* POST /api/u/:username/contact — submit a contact */
 router.post("/:username/contact", async (req, res) => {
   const user = await getUserByUsername(req.params.username);

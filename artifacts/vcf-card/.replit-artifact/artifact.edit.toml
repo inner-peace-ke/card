@@ -1,0 +1,20 @@
+kind = "web"
+previewPath = "/"
+title = "wolfXnode Digital Card"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/vcf-card run dev"
+
+[services.production]
+serve = "static"
+
+[services.production.build]
+args = ["pnpm", "--filter", "@workspace/vcf-card", "run", "build"]
+
+[services.production.build.env]
+NODE_ENV = "production"

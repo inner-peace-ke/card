@@ -7,24 +7,24 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 const G = "var(--primary)";
 const BORDER = "var(--primary-border)";
 
-function StatCard({ label, value, sub, icon, highlight }: {
+function StatCard({ label, value, sub, icon, highlight, isMobile }: {
   label: string; value: string | number; sub?: string;
-  icon: React.ReactNode; highlight?: boolean;
+  icon: React.ReactNode; highlight?: boolean; isMobile?: boolean;
 }) {
   return (
     <div style={{
       background: highlight ? "rgba(0,255,0,0.05)" : "rgba(0,0,0,0.55)",
       border: `1px solid ${highlight ? "rgba(0,255,0,0.35)" : BORDER}`,
-      borderRadius: 12, padding: "14px 13px 12px", position: "relative",
+      borderRadius: 10, padding: isMobile ? "10px 9px 9px" : "14px 13px 12px", position: "relative",
     }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-        <span style={{ fontSize: ".58rem", color: "var(--gray-500)", letterSpacing: ".1em", textTransform: "uppercase", fontFamily: "'JetBrains Mono',monospace", lineHeight: 1.3 }}>{label}</span>
-        <span style={{ color: highlight ? G : "rgba(0,255,0,0.3)", flexShrink: 0, marginLeft: 4 }}>{icon}</span>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: isMobile ? 6 : 10 }}>
+        <span style={{ fontSize: isMobile ? ".52rem" : ".58rem", color: "var(--gray-500)", letterSpacing: ".08em", textTransform: "uppercase", fontFamily: "'JetBrains Mono',monospace", lineHeight: 1.25 }}>{label}</span>
+        {!isMobile && <span style={{ color: highlight ? G : "rgba(0,255,0,0.3)", flexShrink: 0, marginLeft: 4 }}>{icon}</span>}
       </div>
-      <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 700, fontSize: "1.35rem", color: highlight ? G : "#fff", lineHeight: 1, marginBottom: 5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 700, fontSize: isMobile ? ".95rem" : "1.35rem", color: highlight ? G : "#fff", lineHeight: 1, marginBottom: isMobile ? 3 : 5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         {value}
       </div>
-      {sub && <div style={{ fontSize: ".6rem", color: "var(--gray-500)", fontFamily: "'JetBrains Mono',monospace", lineHeight: 1.3 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: isMobile ? ".52rem" : ".6rem", color: "var(--gray-500)", fontFamily: "'JetBrains Mono',monospace", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sub}</div>}
     </div>
   );
 }
@@ -133,48 +133,48 @@ export default function Dashboard() {
       </div>
 
       {/* Stats — 3 cols on mobile, 6 on desktop */}
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(3,1fr)" : "repeat(6,1fr)", gap: 8, marginBottom: 16 }}>
-        <StatCard label="Contacts" value={count}
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(3,1fr)" : "repeat(6,1fr)", gap: isMobile ? 6 : 8, marginBottom: 14 }}>
+        <StatCard isMobile={isMobile} label="Contacts" value={count}
           sub={count === 0 ? "none yet" : "collected"}
           highlight={count > 0}
           icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
         />
-        <StatCard label="Slots Left" value={remaining}
+        <StatCard isMobile={isMobile} label="Slots Left" value={remaining}
           sub={`of ${maxContacts}`}
           icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>}
         />
-        <StatCard label="Progress" value={`${Math.round(pct)}%`}
+        <StatCard isMobile={isMobile} label="Progress" value={`${Math.round(pct)}%`}
           sub={stats?.targetReached ? "✓ reached!" : "to target"}
           highlight={stats?.targetReached}
           icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>}
         />
-        <StatCard label="Target" value={target}
-          sub="to unlock VCF"
+        <StatCard isMobile={isMobile} label="Target" value={target}
+          sub="unlock VCF"
           icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>}
         />
-        <StatCard label="Plan" value={planName.toUpperCase()}
-          sub={`${maxContacts} limit`}
+        <StatCard isMobile={isMobile} label="Plan" value={planName.toUpperCase()}
+          sub={`${maxContacts} max`}
           icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>}
         />
-        <StatCard label="Card" value={cardSetUp ? "ACTIVE" : "SETUP"}
-          sub={cardSetUp ? "customised" : "needs setup"}
+        <StatCard isMobile={isMobile} label="Card" value={cardSetUp ? "ACTIVE" : "SETUP"}
+          sub={cardSetUp ? "ready" : "needs setup"}
           highlight={cardSetUp}
           icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/></svg>}
         />
       </div>
 
       {/* Progress bar */}
-      <div style={{ background: "rgba(0,0,0,0.55)", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "13px 16px", marginBottom: 18 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, gap: 8, flexWrap: "wrap" }}>
-          <span style={{ fontSize: ".68rem", color: "var(--gray-400)", fontFamily: "'JetBrains Mono',monospace" }}>
-            {count} collected · {remaining} left · target {target}
+      <div style={{ background: "rgba(0,0,0,0.55)", border: `1px solid ${BORDER}`, borderRadius: 12, padding: isMobile ? "11px 13px" : "13px 16px", marginBottom: 16 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7, gap: 6 }}>
+          <span style={{ fontSize: isMobile ? ".6rem" : ".68rem", color: "var(--gray-400)", fontFamily: "'JetBrains Mono',monospace", whiteSpace: isMobile ? "nowrap" : undefined, overflow: "hidden", textOverflow: "ellipsis" }}>
+            {isMobile ? `${count} · ${remaining} left` : `${count} collected · ${remaining} left · target ${target}`}
           </span>
           {stats?.targetReached
-            ? <span style={{ fontFamily: "'Orbitron',monospace", fontSize: ".68rem", color: G, fontWeight: 700 }}>✓ VCF READY</span>
-            : <span style={{ fontSize: ".68rem", color: "var(--gray-600)" }}>🔒 unlocks at {target}</span>
+            ? <span style={{ fontFamily: "'Orbitron',monospace", fontSize: ".6rem", color: G, fontWeight: 700, flexShrink: 0 }}>✓ READY</span>
+            : <span style={{ fontSize: ".6rem", color: "var(--gray-600)", flexShrink: 0, whiteSpace: "nowrap" }}>🔒 {target}</span>
           }
         </div>
-        <div className="progress-track" style={{ height: 7 }}>
+        <div className="progress-track" style={{ height: 6 }}>
           <div className="progress-fill" style={{ width: `${pct}%` }} />
         </div>
       </div>
